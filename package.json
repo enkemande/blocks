@@ -1,0 +1,24 @@
+{
+  "name": "blocks",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "db:push": "turbo db:push",
+    "db:generate": "turbo db:generate",
+    "db:studio": "turbo db:studio",
+    "db:check": "turbo run db:check",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.3"
+  },
+  "dependencies": {
+    "dotenv-cli": "^7.4.1"
+  }
+}
