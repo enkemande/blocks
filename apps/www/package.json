@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "drizzle-kit push:pg",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:generate": "drizzle-kit generate:pg"
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.1",
@@ -32,13 +32,15 @@
     "react-dom": "^18",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "ws": "^8.17.0",
     "zod": "^3.23.6"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "drizzle-kit": "^0.20.18",
+    "@types/ws": "^8.5.10",
+    "drizzle-kit": "^0.21.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",

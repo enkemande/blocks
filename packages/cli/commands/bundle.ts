@@ -1,15 +1,11 @@
 import { writeBlock } from "@/utils/block";
+import { getAllModules } from "@/utils/get-modules";
 import { handleError } from "@/utils/handle-error";
 import { logger } from "@/utils/logger";
 import { Command } from "commander";
 import fs from "fs";
 import ora from "ora";
 import path from "path";
-
-// npx blocks bundle <blockDir>
-// npx blocks bundle ./blocks/button
-// npx blocks bundle ./blocks/button --name my-button
-// npx blocks bundle ./blocks/button --name my-button --description "My custom button"
 
 export const bundle = new Command()
   .name("bundle")
@@ -33,12 +29,14 @@ export const bundle = new Command()
         throw new Error(`${blockDir} does not exist`);
       }
 
+      const modules = await getAllModules(blockPath);
+
       await writeBlock(blockName, {
         name: blockName,
         version: "1.0.0",
         description: "A table component",
         path: blockPath,
-        modules: [],
+        modules: modules,
       });
 
       spinner.stop();

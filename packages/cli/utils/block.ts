@@ -2,8 +2,7 @@ import fs from "fs";
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import zod from "zod";
-
-// import { isBuiltin } from "module";
+import { moduleSchemas } from "./get-modules";
 
 const ext = ".block";
 const dir = ".blocks";
@@ -15,16 +14,7 @@ const blockSchema = zod.object({
   path: zod.string(),
   framework: zod.string().optional(),
   uiLibrary: zod.string().optional(),
-  modules: zod
-    .array(
-      zod.object({
-        name: zod.string(),
-        file: zod.string(),
-        isNodeModule: zod.boolean().optional(),
-        isBuiltIn: zod.boolean().optional(),
-      })
-    )
-    .optional(),
+  modules: zod.array(moduleSchemas).optional(),
 });
 
 const blockConfigSchema = zod.object({

@@ -10,7 +10,10 @@ export const GET = async (
 ) => {
   try {
     const headers = new Headers();
-    const filePath = path.resolve("./registry", ...context.params.p);
+    const filePath = path.resolve(
+      process.env.REGISTRY_STORAGE as string,
+      ...context.params.p,
+    );
     if (!fs.existsSync(filePath)) throw new Error("File not found");
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {

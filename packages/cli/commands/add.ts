@@ -29,6 +29,7 @@ export const add = new Command()
         });
         const zip = new AdmZip(response.data);
         zip.extractAllTo(extractDir, true);
+        // get block
         spinner.stop();
         logger.success(`Block ${name} added successfully`);
       }
