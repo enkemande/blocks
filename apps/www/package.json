@@ -12,6 +12,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.1.0",
     "@next/env": "^14.2.3",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -24,6 +25,7 @@
     "@trpc/react-query": "11.0.0-rc.366",
     "@trpc/server": "11.0.0-rc.366",
     "@types/node": "^20.12.11",
+    "@vercel/blob": "^0.23.2",
     "@vercel/postgres": "^0.8.0",
     "adm-zip": "^0.5.12",
     "class-variance-authority": "^0.7.0",

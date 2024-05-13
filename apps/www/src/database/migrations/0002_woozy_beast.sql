@@ -1,0 +1,1 @@
+ALTER TABLE "blocks" ALTER COLUMN "owner_id" SET DATA TYPE text;
