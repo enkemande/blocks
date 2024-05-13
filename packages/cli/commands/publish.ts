@@ -16,9 +16,8 @@ export const publish = new Command()
         const formData = new FormData();
         formData.append("name", block.name);
         formData.append("description", block.description);
-        formData.append("modules", JSON.stringify(block.modules));
         createFolderFormData(block.path, formData);
-        await http.post("/api/publish", formData, {
+        await http.post("/api/blocks/publish", formData, {
           headers: { ...formData.getHeaders() },
         });
       }

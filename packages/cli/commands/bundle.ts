@@ -1,5 +1,4 @@
 import { writeBlock } from "@/utils/block";
-import { getAllModules } from "@/utils/get-modules";
 import { handleError } from "@/utils/handle-error";
 import { logger } from "@/utils/logger";
 import { Command } from "commander";
@@ -29,14 +28,11 @@ export const bundle = new Command()
         throw new Error(`${blockDir} does not exist`);
       }
 
-      const modules = await getAllModules(blockPath);
-
       await writeBlock(blockName, {
         name: blockName,
         version: "1.0.0",
         description: "A table component",
         path: blockPath,
-        modules: modules,
       });
 
       spinner.stop();

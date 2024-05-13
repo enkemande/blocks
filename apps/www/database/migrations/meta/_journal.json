@@ -1,12 +1,12 @@
 {
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1715053240073,
-      "tag": "0000_smiling_liz_osborn",
+      "version": "6",
+      "when": 1715566430540,
+      "tag": "0000_fixed_ted_forrester",
       "breakpoints": true
     }
   ]

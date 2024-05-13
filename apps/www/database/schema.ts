@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
-  boolean,
   integer,
+  pgEnum,
   pgTable,
   serial,
   text,
@@ -9,11 +9,15 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+export const moduleTypeEnum = pgEnum("moduleType", [
+  "node_module",
+  "local_module",
+]);
+
 export const blocks = pgTable("blocks", {
   id: serial("id").primaryKey().notNull(),
-  name: varchar("name", { length: 100 }).unique().notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
-  path: varchar("path", { length: 100 }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => {
     return new Date();
   }),
@@ -21,10 +25,6 @@ export const blocks = pgTable("blocks", {
     .notNull()
     .defaultNow(),
 });
-
-export const blocksRelations = relations(blocks, ({ many }) => ({
-  files: many(files),
-}));
 
 export const files = pgTable("files", {
   id: serial("id").primaryKey().notNull(),
@@ -43,18 +43,9 @@ export const files = pgTable("files", {
     .defaultNow(),
 });
 
-export const filesRelations = relations(files, ({ one, many }) => ({
-  modules: many(modules),
-  block: one(blocks, {
-    fields: [files.blockId],
-    references: [blocks.id],
-  }),
-}));
-
 export const modules = pgTable("modules", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 100 }).notNull(),
-  isBuiltIn: boolean("is_built_in").notNull(),
   fileId: integer("file_id")
     .references(() => files.id)
     .notNull(),
@@ -65,6 +56,18 @@ export const modules = pgTable("modules", {
     .notNull()
     .defaultNow(),
 });
+
+export const blocksRelations = relations(blocks, ({ many }) => ({
+  files: many(files),
+}));
+
+export const filesRelations = relations(files, ({ one, many }) => ({
+  modules: many(modules),
+  block: one(blocks, {
+    fields: [files.blockId],
+    references: [blocks.id],
+  }),
+}));
 
 export const modulesRelations = relations(modules, ({ one, many }) => ({
   file: one(files, {
