@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "tsup --watch",
+    "dev": "tsup",
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist && rimraf components",

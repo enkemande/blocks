@@ -24,7 +24,7 @@ export const add = new Command()
         const extractDir = path.resolve(process.cwd(), destination, name);
         const response = await http({
           method: "GET",
-          url: `/api/download/${blockPath}`,
+          url: `/api/blocks/download/${blockPath}`,
           responseType: "arraybuffer",
         });
         const zip = new AdmZip(response.data);

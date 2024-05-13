@@ -6,6 +6,15 @@ interface HomePageProps {
 
 export default async function Home(props: HomePageProps) {
   const blocks = await trpcCaller.block.getAll();
-  console.log(blocks);
-  return <main className="p-4">{JSON.stringify(blocks)}</main>;
+
+  return (
+    <main className="p-4">
+      {blocks.map((block, key) => (
+        <div key={key}>
+          <h1>{block.name}</h1>
+          <p>{block.description}</p>
+        </div>
+      ))}
+    </main>
+  );
 }
