@@ -3,8 +3,8 @@ import { handleError } from "@/utils/handle-error";
 import { logger } from "@/utils/logger";
 import { Command } from "commander";
 import fs from "fs";
-import ora from "ora";
 import path from "path";
+import prompts from "prompts";
 
 export const bundle = new Command()
   .name("bundle")
@@ -18,7 +18,6 @@ export const bundle = new Command()
     process.cwd(),
   )
   .action(async (blockDir: string, opts) => {
-    const spinner = ora(`Bundling...`).start();
     try {
       const blockDirArr = blockDir.split("/");
       const blockPath = path.resolve(opts.cwd, blockDir);
@@ -28,17 +27,29 @@ export const bundle = new Command()
         throw new Error(`${blockDir} does not exist`);
       }
 
-      await writeBlock(blockName, {
-        name: blockName,
-        version: "1.0.0",
-        description: "A table component",
+      const { name } = await prompts({
+        type: "text",
+        name: "name",
+        hint: blockName,
+        message: "What is the name of the block?",
+        instructions: false,
+      });
+
+      const { description } = await prompts({
+        type: "text",
+        name: "description",
+        message: "What is the description of the block?",
+        instructions: false,
+      });
+
+      await writeBlock(name, {
+        name: name,
+        description: description,
         path: blockPath,
       });
 
-      spinner.stop();
       logger.success(`Block ${blockName} bundled successfully`);
     } catch (error) {
-      spinner.stop();
       handleError(error);
     }
   });

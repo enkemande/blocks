@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "tsup",
+    "dev": "tsup --watch",
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist && rimraf components",
@@ -47,6 +47,7 @@
     "@types/adm-zip": "^0.5.5",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.12.11",
+    "@types/prompts": "^2.4.9",
     "tsup": "^6.6.3",
     "type-fest": "^4.18.2",
     "typescript": "^5.4.5"

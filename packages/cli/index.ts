@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { add } from "@/commands/add";
 import { bundle } from "@/commands/bundle";
+import { init } from "@/commands/init";
 import { publish } from "@/commands/publish";
 import { Command } from "commander";
 
@@ -13,7 +14,11 @@ async function main() {
     .description("add components and dependencies to your project")
     .version("1.0.0", "-v, --version", "display the version number");
 
-  program.addCommand(bundle).addCommand(publish).addCommand(add);
+  program
+    .addCommand(init)
+    .addCommand(bundle)
+    .addCommand(publish)
+    .addCommand(add);
   program.parse(process.argv);
 }
 

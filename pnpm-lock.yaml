@@ -185,6 +185,9 @@ importers:
       '@types/node':
         specifier: ^20.12.11
         version: 20.12.11
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
       tsup:
         specifier: ^6.6.3
         version: 6.7.0(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.12.11)(typescript@5.4.5))(typescript@5.4.5)
@@ -1181,6 +1184,9 @@ packages:
 
   '@types/pg@8.6.6':
     resolution: {integrity: sha512-O2xNmXebtwVekJDD+02udOncjVcMZQuTEQEMpKJ0ZRf5E7/9JJX3izhKUcUifBkyKpljyUM6BTgy2trmviKlpw==}
+
+  '@types/prompts@2.4.9':
+    resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
 
   '@types/prop-types@15.7.12':
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
@@ -4065,6 +4071,11 @@ snapshots:
       '@types/node': 20.12.11
       pg-protocol: 1.6.1
       pg-types: 2.2.0
+
+  '@types/prompts@2.4.9':
+    dependencies:
+      '@types/node': 20.12.11
+      kleur: 3.0.3
 
   '@types/prop-types@15.7.12': {}
 

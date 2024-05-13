@@ -7,11 +7,29 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { pipeline } from "stream";
 import { promisify } from "util";
+import { z, ZodError } from "zod";
 
 const pump = promisify(pipeline);
 
+const publishBlockSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
 export const POST = async (request: NextRequest) => {
   try {
+    const notAllowedExtensions = [
+      ".mp4",
+      ".mov",
+      ".avi",
+      ".wmv",
+      ".flv",
+      ".mkv",
+      ".webm",
+      ".mpg",
+      ".mpeg",
+      ".m4v",
+    ];
     const registryPath = path.resolve(process.cwd(), "registry");
     if (!fs.existsSync(registryPath)) fs.mkdirSync(registryPath);
 
@@ -20,8 +38,12 @@ export const POST = async (request: NextRequest) => {
     if (!fs.existsSync(ownerPath)) fs.mkdirSync(ownerPath);
 
     const formData = await request.formData();
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
+
+    const { name, description } = publishBlockSchema.parse({
+      name: formData.get("name"),
+      description: formData.get("description"),
+    });
+
     const formEntries = Array.from(formData.entries());
     const fileList = formEntries.filter(([, value]) => value instanceof File);
 
@@ -44,6 +66,10 @@ export const POST = async (request: NextRequest) => {
         const arrayBuffer = await file.arrayBuffer();
         const arrayBufferToString = Buffer.from(arrayBuffer).toString();
         const moduleList = extractModules(arrayBufferToString);
+
+        if (notAllowedExtensions.includes(path.extname(file.name))) {
+          throw new Error("File type not allowed");
+        }
 
         const [saveFile] = await db
           .insert(files)
@@ -73,9 +99,13 @@ export const POST = async (request: NextRequest) => {
       { status: 200 },
     );
   } catch (error) {
-    console.log("error", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ message: error.message }, { status: 500 });
+    if (error instanceof ZodError) {
+      return NextResponse.json({ message: error.message }, { status: 403 });
+    } else {
+      return NextResponse.json(
+        { message: "An unknown error occurred" },
+        { status: 500 },
+      );
     }
   }
 };

@@ -1,3 +1,4 @@
+import { BlockNotFoundError } from "@/exceptions/block-not-found";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import { readFile } from "fs/promises";
@@ -10,12 +11,12 @@ export const GET = async (
 ) => {
   try {
     const headers = new Headers();
-    const filePath = path.resolve(
-      process.env.REGISTRY_STORAGE as string,
-      ...context.params.p,
-    );
-    if (!fs.existsSync(filePath)) throw new Error("File not found");
+    const filePath = path.resolve("registry", ...context.params.p);
+    if (!fs.existsSync(filePath)) {
+      throw new BlockNotFoundError("Block does not exist");
+    }
     const stats = fs.statSync(filePath);
+
     if (stats.isDirectory()) {
       const folderPathArr = filePath.split("/");
       const folderName = folderPathArr[folderPathArr.length - 1];
@@ -39,8 +40,16 @@ export const GET = async (
       return new NextResponse(buffer, { headers });
     }
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ errorMessage: error.message });
+    if (error instanceof BlockNotFoundError) {
+      return NextResponse.json(
+        { errorMessage: error.message },
+        { status: 404 },
+      );
+    } else {
+      return NextResponse.json(
+        { errorMessage: "An unknown error occurred" },
+        { status: 500 },
+      );
     }
   }
 };

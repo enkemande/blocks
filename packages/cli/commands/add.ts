@@ -1,7 +1,6 @@
 import { getBlockConfig } from "@/utils/block";
 import { handleError } from "@/utils/handle-error";
 import { http } from "@/utils/http";
-import { logger } from "@/utils/logger";
 import AdmZip from "adm-zip";
 import { Command } from "commander";
 import ora from "ora";
@@ -12,15 +11,13 @@ export const add = new Command()
   .description("add a block component to your project")
   .argument("[blockPath...]", "the blocks to add")
   .action(async (blockPaths: string[]) => {
-    const spinner = ora(`Adding block...`).start();
+    const spinner = ora();
     try {
+      spinner.start("Adding block....");
       const { destination } = await getBlockConfig();
       for (const blockPath of blockPaths) {
         const blockPathArr = blockPath.split("/");
         const name = blockPathArr[blockPathArr.length - 1];
-        if (path.extname(name)) {
-          throw new Error(`${name} is an invalid block name`);
-        }
         const extractDir = path.resolve(process.cwd(), destination, name);
         const response = await http({
           method: "GET",
@@ -29,9 +26,7 @@ export const add = new Command()
         });
         const zip = new AdmZip(response.data);
         zip.extractAllTo(extractDir, true);
-        // get block
-        spinner.stop();
-        logger.success(`Block ${name} added successfully`);
+        spinner.succeed(`Block ${name} added successfully`);
       }
     } catch (error) {
       spinner.stop();
