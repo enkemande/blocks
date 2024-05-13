@@ -1,4 +1,4 @@
-import { BlockNotFoundError } from "@/src/exceptions/block-not-found";
+import { BlockNotFoundError } from "@/exceptions/block-not-found";
 import AdmZip from "adm-zip";
 import fs from "fs";
 import { readFile } from "fs/promises";
