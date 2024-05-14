@@ -1,8 +1,5 @@
-import { db } from "@/database";
-import { files, modules } from "@/database/schema";
 import { trpcCaller } from "@/libs/trpc/server";
-import { extractModules } from "@/utils/extract-modules";
-import { faker } from "@faker-js/faker";
+import { extractModulesFromFile } from "@/utils/extract-modules";
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 import { z, ZodError } from "zod";
@@ -14,50 +11,41 @@ const publishBlockSchema = z.object({
 
 export const POST = async (request: NextRequest) => {
   try {
-    const ownerName = faker.internet.userName();
     const formData = await request.formData();
 
-    const { name, description } = publishBlockSchema.parse({
+    const validateValues = publishBlockSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
     });
 
-    const formEntries = Array.from(formData.entries());
-    const fileList = formEntries.filter(([, value]) => value instanceof File);
-
-    const block = await trpcCaller.block.create({
-      name: `${ownerName}/${name}`,
-      description,
+    const files = Array.from(formData.entries()).filter(([, value]) => {
+      return value instanceof File;
     });
 
+    const block = await trpcCaller.block.save(validateValues);
+
     await Promise.all(
-      fileList.map(async ([dirPath, value]) => {
+      files.map(async ([dirPath, value]) => {
         const file = value as File;
-        const arrayBuffer = await file.arrayBuffer();
-        const arrayBufferToString = Buffer.from(arrayBuffer).toString();
-        const { downloadUrl } = await put(file.name, file, {
-          access: "public",
+        const blob = await put(file.name, file, { access: "public" });
+
+        const fileData = await trpcCaller.file.add({
+          blockId: block.id,
+          downloadUrl: blob.downloadUrl,
+          path: dirPath,
+          filename: file.name,
+          size: file.size,
+          type: file.type,
         });
 
-        const moduleList = extractModules(arrayBufferToString);
-        const [saveFile] = await db
-          .insert(files)
-          .values({
-            blockId: block.id,
-            downloadUrl: downloadUrl,
-            path: dirPath,
-            filename: file.name,
-            size: file.size,
-            type: file.type,
-          })
-          .returning({ id: files.id });
+        const modules = await extractModulesFromFile(file);
 
         await Promise.all(
-          moduleList.map(async (name) => {
-            return db
-              .insert(modules)
-              .values({ name, fileId: saveFile.id })
-              .returning({ id: modules.id });
+          modules.map((module) => {
+            return trpcCaller.module.save({
+              name: module,
+              fileId: fileData.id,
+            });
           }),
         );
       }),

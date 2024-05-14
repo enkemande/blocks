@@ -30,6 +30,7 @@ export const envSchema = z.object({
   VERCEL_URL: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
+  NEXTAUTH_SECRET: z.string(),
 });
 
 export default envSchema.parse(process.env);

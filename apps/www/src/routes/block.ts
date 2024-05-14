@@ -1,28 +1,24 @@
-import { blocks, users } from "@/database/schema";
+import { blocks } from "@/database/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 export const blockRouter = createTRPCRouter({
-  create: protectedProcedure
+  save: protectedProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
-    .mutation(async ({ ctx, input: { name } }) => {
-      const user = await ctx.db.query.users.findFirst({
-        where: eq(users.id, ctx.session.user.email!),
-      });
-      if (!user) throw new Error("User not found");
+    .mutation(async ({ ctx, input }) => {
       return ctx.db
         .insert(blocks)
-        .values({ name, ownerId: user.id })
+        .values({ ...input, ownerId: ctx.currentUser?.id! })
         .returning({ id: blocks.id })
         .then((result) => result[0]);
     }),
   get: publicProcedure
-    .input(z.object({ owner: z.string(), block: z.string() }))
-    .query(async ({ ctx, input: { owner, block } }) => {
+    .input(z.object({ ownerUsername: z.string(), name: z.string() }))
+    .query(async ({ ctx, input: { ownerUsername, name } }) => {
       return ctx.db.query.blocks.findFirst({
         with: { files: { with: { modules: true } } },
-        where: and(eq(blocks.name, block)),
+        where: and(eq(blocks.name, name)),
       });
     }),
   getAll: publicProcedure.query(({ ctx }) => {

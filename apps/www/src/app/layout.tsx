@@ -1,3 +1,4 @@
+import NextAuthProvider from "@/libs/auth/provider";
 import TrpcProvider from "@/libs/trpc/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <TrpcProvider>{children}</TrpcProvider>
+        <NextAuthProvider>
+          <TrpcProvider>{children}</TrpcProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

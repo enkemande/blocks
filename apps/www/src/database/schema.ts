@@ -16,9 +16,12 @@ export const users = pgTable("user", {
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
   email: text("email").notNull(),
+  // username: text("username").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
+
+export type User = typeof users.$inferSelect;
 
 export const accounts = pgTable(
   "account",
