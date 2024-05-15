@@ -1,4 +1,4 @@
-import { files } from "@/database/schema";
+import { filesTable } from "@/database/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc";
 import { z } from "zod";
 
@@ -16,9 +16,9 @@ export const fileRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.db
-        .insert(files)
+        .insert(filesTable)
         .values(input)
-        .returning({ id: files.id })
+        .returning({ id: filesTable.id })
         .then((res) => res[0]);
     }),
 });

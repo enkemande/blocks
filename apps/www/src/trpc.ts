@@ -1,5 +1,5 @@
 import { db } from "@/database";
-import { User, users } from "@/database/schema";
+import { User, usersTable } from "@/database/schema";
 import { authOptions } from "@/libs/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
@@ -12,8 +12,8 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerSession(authOptions);
   if (session?.user && session.user.email) {
     currentUser =
-      (await db.query.users.findFirst({
-        where: eq(users.email, session.user.email),
+      (await db.query.usersTable.findFirst({
+        where: eq(usersTable.email, session.user.email),
       })) ?? null;
   }
   return { db, session, currentUser, ...opts };

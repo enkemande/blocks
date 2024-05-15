@@ -1,4 +1,4 @@
-import { modules } from "@/database/schema";
+import { modulesTable } from "@/database/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc";
 import { z } from "zod";
 
@@ -12,9 +12,9 @@ export const moduleRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.db
-        .insert(modules)
+        .insert(modulesTable)
         .values(input)
-        .returning({ id: modules.id })
+        .returning({ id: modulesTable.id })
         .then((res) => res[0]);
     }),
 });

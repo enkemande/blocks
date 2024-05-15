@@ -8,28 +8,27 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccount } from "next-auth/adapters";
 
-export const users = pgTable("user", {
+export const usersTable = pgTable("users", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
   email: text("email").notNull(),
-  // username: text("username").notNull(),
+  username: text("username").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
 
-export type User = typeof users.$inferSelect;
+export type User = typeof usersTable.$inferSelect;
 
-export const accounts = pgTable(
-  "account",
+export const accountsTable = pgTable(
+  "accounts",
   {
     userId: text("userId")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccount>().notNull(),
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -47,16 +46,16 @@ export const accounts = pgTable(
   }),
 );
 
-export const sessions = pgTable("session", {
+export const sessionsTable = pgTable("sessions", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-export const verificationTokens = pgTable(
-  "verificationToken",
+export const verificationTokensTable = pgTable(
+  "verification_tokens",
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
@@ -67,11 +66,11 @@ export const verificationTokens = pgTable(
   }),
 );
 
-export const blocks = pgTable("blocks", {
+export const blocksTable = pgTable("blocks", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 100 }).notNull(),
   ownerId: text("owner_id")
-    .references(() => users.id)
+    .references(() => usersTable.id)
     .notNull(),
   description: text("description"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => {
@@ -82,7 +81,7 @@ export const blocks = pgTable("blocks", {
     .defaultNow(),
 });
 
-export const files = pgTable("files", {
+export const filesTable = pgTable("files", {
   id: serial("id").primaryKey().notNull(),
   downloadUrl: text("download_url"),
   path: text("path"),
@@ -90,7 +89,7 @@ export const files = pgTable("files", {
   type: varchar("type", { length: 100 }).notNull(),
   size: integer("size").notNull(),
   blockId: integer("block_id")
-    .references(() => blocks.id)
+    .references(() => blocksTable.id)
     .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => {
     return new Date();
@@ -100,11 +99,11 @@ export const files = pgTable("files", {
     .defaultNow(),
 });
 
-export const modules = pgTable("modules", {
+export const modulesTable = pgTable("modules", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 100 }).notNull(),
   fileId: integer("file_id")
-    .references(() => files.id)
+    .references(() => filesTable.id)
     .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => {
     return new Date();
@@ -114,45 +113,45 @@ export const modules = pgTable("modules", {
     .defaultNow(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
-  blocks: many(blocks),
-  accounts: many(accounts),
-  sessions: many(sessions),
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  blocks: many(blocksTable),
+  accounts: many(accountsTable),
+  sessions: many(sessionsTable),
 }));
 
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, {
-    fields: [accounts.userId],
-    references: [users.id],
+export const accountsRelations = relations(accountsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [accountsTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, {
-    fields: [sessions.userId],
-    references: [users.id],
+export const sessionsRelations = relations(sessionsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [sessionsTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
-export const blocksRelations = relations(blocks, ({ many, one }) => ({
-  files: many(files),
-  user: one(users, {
-    fields: [blocks.ownerId],
-    references: [users.id],
+export const blocksRelations = relations(blocksTable, ({ many, one }) => ({
+  files: many(filesTable),
+  user: one(usersTable, {
+    fields: [blocksTable.ownerId],
+    references: [usersTable.id],
   }),
 }));
 
-export const filesRelations = relations(files, ({ one, many }) => ({
-  modules: many(modules),
-  block: one(blocks, {
-    fields: [files.blockId],
-    references: [blocks.id],
+export const filesRelations = relations(filesTable, ({ one, many }) => ({
+  modules: many(modulesTable),
+  block: one(blocksTable, {
+    fields: [filesTable.blockId],
+    references: [blocksTable.id],
   }),
 }));
 
-export const modulesRelations = relations(modules, ({ one, many }) => ({
-  file: one(files, {
-    fields: [modules.fileId],
-    references: [files.id],
+export const modulesRelations = relations(modulesTable, ({ one, many }) => ({
+  file: one(filesTable, {
+    fields: [modulesTable.fileId],
+    references: [filesTable.id],
   }),
 }));
