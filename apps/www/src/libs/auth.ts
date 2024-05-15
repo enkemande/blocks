@@ -24,5 +24,9 @@ export const authOptions: AuthOptions = {
     redirect({ url }) {
       return url;
     },
+    session({ session, user }) {
+      session.user = user as schema.User;
+      return session;
+    },
   },
 };

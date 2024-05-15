@@ -1,10 +1,10 @@
 "use client";
+import { trpc } from "@/libs/trpc/client";
 import { getBaseUrl } from "@/utils/get-base-url";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { ReactNode, useState } from "react";
 import SuperJSON from "superjson";
-import { trpc } from "./client";
 
 const createQueryClient = () => new QueryClient();
 

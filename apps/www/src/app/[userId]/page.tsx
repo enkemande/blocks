@@ -17,7 +17,7 @@ export default async function ProfilePage({
   if (!user) notFound();
 
   return (
-    <div>
+    <div className="container">
       <h1>ProfilePage</h1>
       <p>This is the profile page</p>
       <div className="flex gap-2">

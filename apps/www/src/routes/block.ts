@@ -14,7 +14,7 @@ export const blockRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db
         .insert(blocksTable)
-        .values({ ...input, ownerId: ctx.currentUser?.id! })
+        .values({ ...input, ownerId: ctx.session.user?.id! })
         .returning({ id: blocksTable.id })
         .then((result) => result[0]);
     }),
