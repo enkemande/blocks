@@ -22,7 +22,12 @@ export const POST = async (request: NextRequest) => {
       return value instanceof File;
     });
 
-    const block = await trpcCaller.block.save(validateValues);
+    const block = await trpcCaller.block.create({
+      ...validateValues,
+      framework: "react",
+      library: "shadcn",
+      visibility: "public",
+    });
 
     await Promise.all(
       files.map(async ([dirPath, value]) => {

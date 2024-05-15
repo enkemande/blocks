@@ -69,10 +69,13 @@ export const verificationTokensTable = pgTable(
 export const blocksTable = pgTable("blocks", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 100 }).notNull(),
+  framework: text("framework"),
+  library: text("library"),
+  description: text("description"),
+  visibility: text("visibility").notNull(),
   ownerId: text("owner_id")
     .references(() => usersTable.id)
     .notNull(),
-  description: text("description"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => {
     return new Date();
   }),

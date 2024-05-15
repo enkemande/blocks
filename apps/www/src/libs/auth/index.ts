@@ -20,4 +20,9 @@ export const authOptions: AuthOptions = {
       clientSecret: env.GITHUB_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    redirect({ url }) {
+      return url;
+    },
+  },
 };

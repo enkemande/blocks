@@ -4,7 +4,5 @@ import { getAuthData } from "./auth";
 
 export const http = axios.create({
   baseURL: env.HOST,
-  headers: {
-    cookie: `next-auth.session-token=${getAuthData()?.sessionToken}`,
-  },
+  headers: { cookie: getAuthData()?.cookie },
 });

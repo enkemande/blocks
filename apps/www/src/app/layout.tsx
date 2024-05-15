@@ -1,7 +1,9 @@
+import { Input } from "@/components/ui/input";
 import NextAuthProvider from "@/libs/auth/provider";
 import TrpcProvider from "@/libs/trpc/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,12 +19,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <NextAuthProvider>
-          <TrpcProvider>{children}</TrpcProvider>
-        </NextAuthProvider>
-      </body>
-    </html>
+    <NextAuthProvider>
+      <TrpcProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={inter.className}>
+            <div className="max-h-screen flex flex-col">
+              <header>
+                <div className="container flex flex-row items-center justify-between gap-4 p-4">
+                  <h1>BLOCKS</h1>
+                  <div className="flex-1">
+                    <Input placeholder="Search Blocks" />
+                  </div>
+                  <nav>
+                    <ul className="flex flex-row gap-4">
+                      <li>
+                        <Link href="/">Account</Link>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </header>
+              {children}
+              <footer>
+                <div className="container">Footer</div>
+              </footer>
+            </div>
+          </body>
+        </html>
+      </TrpcProvider>
+    </NextAuthProvider>
   );
 }

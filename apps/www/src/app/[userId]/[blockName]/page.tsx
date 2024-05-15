@@ -1,13 +1,18 @@
 import { trpcCaller } from "@/libs/trpc/server";
+import { notFound } from "next/navigation";
 
 type BlockPageProps = {
-  params: { blockName: string; username: string };
+  params: { blockName: string; userId: string };
 };
 
 export default async function BlockPage(props: BlockPageProps) {
-  const { blockName, username } = props.params;
+  const { blockName, userId } = props.params;
+  const user = await trpcCaller.user.getByIdOrUsername(userId);
+
+  if (!user) notFound();
+
   const block = await trpcCaller.block.get({
-    ownerUsername: username,
+    userId: user?.id,
     name: blockName,
   });
 

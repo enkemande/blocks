@@ -1,11 +1,16 @@
 import { blocksTable } from "@/database/schema";
+import {
+  CreateBlockSchema,
+  GetBlockSchema,
+  UpdateBlockSchema,
+} from "@/schemas/block";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 export const blockRouter = createTRPCRouter({
-  save: protectedProcedure
-    .input(z.object({ name: z.string(), description: z.string() }))
+  create: protectedProcedure
+    .input(CreateBlockSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db
         .insert(blocksTable)
@@ -13,12 +18,38 @@ export const blockRouter = createTRPCRouter({
         .returning({ id: blocksTable.id })
         .then((result) => result[0]);
     }),
+  update: protectedProcedure
+    .input(UpdateBlockSchema)
+    .mutation(async ({ ctx, input: { id, ...restOfInput } }) => {
+      return ctx.db
+        .update(blocksTable)
+        .set(restOfInput)
+        .where(eq(blocksTable.id, id))
+        .returning({ id: blocksTable.id })
+        .then((result) => result[0]);
+    }),
+  delete: protectedProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db
+        .delete(blocksTable)
+        .where(eq(blocksTable.id, input))
+        .returning({ id: blocksTable.id })
+        .then((result) => result[0]);
+    }),
+  getAllForUser: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return ctx.db.query.blocksTable.findMany({
+        where: eq(blocksTable.ownerId, input),
+      });
+    }),
   get: publicProcedure
-    .input(z.object({ ownerUsername: z.string(), name: z.string() }))
-    .query(async ({ ctx, input: { ownerUsername, name } }) => {
+    .input(GetBlockSchema)
+    .query(async ({ ctx, input: { userId, name } }) => {
       return ctx.db.query.blocksTable.findFirst({
         with: { files: { with: { modules: true } } },
-        where: and(eq(blocksTable.name, name)),
+        where: and(eq(blocksTable.name, name), eq(blocksTable.ownerId, userId)),
       });
     }),
   getAll: publicProcedure.query(({ ctx }) => {
