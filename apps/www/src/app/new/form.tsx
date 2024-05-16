@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/libs/trpc/client";
 import { CreateBlockSchema } from "@/schemas/block";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,7 +32,12 @@ export type NewBlockFormProps = {};
 type CreateBlockFormType = z.infer<typeof CreateBlockSchema>;
 
 export const NewBlockForm: React.FC<NewBlockFormProps> = () => {
-  const createBlock = trpc.block.create.useMutation();
+  const router = useRouter();
+  const createBlock = trpc.block.create.useMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
 
   const form = useForm<CreateBlockFormType>({
     resolver: zodResolver(CreateBlockSchema),

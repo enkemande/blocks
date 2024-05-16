@@ -1,5 +1,7 @@
 import { trpcCaller } from "@/libs/trpc/server";
 import { notFound } from "next/navigation";
+import Details from "./details";
+import SetupInstructions from "./setup-instructions";
 
 type BlockPageProps = {
   params: { blockName: string; userId: string };
@@ -16,10 +18,11 @@ export default async function BlockPage(props: BlockPageProps) {
     name: blockName,
   });
 
+  if (!block) notFound();
+
   return (
-    <div>
-      <h1>BlockPage</h1>
-      <pre>{JSON.stringify(block, null, 2)}</pre>
-    </div>
+    <main className="container">
+      {block.files.length === 0 ? <SetupInstructions /> : <Details />}
+    </main>
   );
 }

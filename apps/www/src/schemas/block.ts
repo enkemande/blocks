@@ -15,16 +15,20 @@ export const CreateBlockSchema = z
   })
   .strict();
 
-export const UpdateBlockSchema = z.object({
-  id: z.number(),
-  name: z.string().min(1, "block name should be at least 1 character long"),
-  description: z
-    .string()
-    .min(1, "block description should be at least 1 character long"),
-  visibility: z.string().default("public"),
-});
+export const UpdateBlockSchema = z
+  .object({
+    id: z.number(),
+    name: z.string().min(1, "block name should be at least 1 character long"),
+    description: z
+      .string()
+      .min(1, "block description should be at least 1 character long"),
+    visibility: z.string().default("public"),
+  })
+  .strict();
 
-export const GetBlockSchema = z.object({
-  userId: z.string(),
-  name: z.string(),
-});
+export const GetBlockSchema = z
+  .object({
+    userId: z.string(),
+    name: z.string(),
+  })
+  .strict();

@@ -1,8 +1,12 @@
 import { Input } from "@/components/ui/input";
+import { authOptions } from "@/libs/auth";
 import NextAuthProvider from "@/providers/auth";
 import TrpcProvider from "@/providers/trpc";
 import UserProvider from "@/providers/user";
+import { cn } from "@/utils/cn";
+import { Plus, User } from "lucide-react";
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
@@ -14,30 +18,41 @@ export const metadata: Metadata = {
   description: "Share your react component to world",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
   return (
     <NextAuthProvider>
       <TrpcProvider>
         <UserProvider>
           <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
+            <body className={cn(inter.className, "bg-gray-100")}>
               <header>
-                <div className="container flex flex-row items-center justify-between gap-4 p-4">
-                  <h1>BLOCKS</h1>
-                  <div className="flex-1">
-                    <Input placeholder="Search Blocks" />
+                <div className="container ">
+                  <div className="flex flex-row items-center justify-between gap-4 py-4">
+                    <div className="flex-1">
+                      <Input placeholder="Search Blocks" />
+                    </div>
+                    <nav>
+                      <ul className="flex flex-row gap-4">
+                        <li>
+                          <Link href="/new">
+                            <Plus className="h-6 w-6" />
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href={`/${session?.user.username || session?.user.id}`}
+                          >
+                            <User className="h-6 w-6" />
+                          </Link>
+                        </li>
+                      </ul>
+                    </nav>
                   </div>
-                  <nav>
-                    <ul className="flex flex-row gap-4">
-                      <li>
-                        <Link href="/">Account</Link>
-                      </li>
-                    </ul>
-                  </nav>
                 </div>
               </header>
               {children}

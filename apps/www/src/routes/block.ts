@@ -53,6 +53,6 @@ export const blockRouter = createTRPCRouter({
       });
     }),
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.blocksTable.findMany({});
+    return ctx.db.query.blocksTable.findMany({ with: { user: true } });
   }),
 });
