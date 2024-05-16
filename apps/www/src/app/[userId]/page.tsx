@@ -18,14 +18,14 @@ export default async function ProfilePage({
 
   return (
     <div className="container">
-      <h1>ProfilePage</h1>
-      <p>This is the profile page</p>
-      <div className="flex gap-2">
-        <Link href={`/${user.username}?tab=overview`}>Overview</Link>
-        <Link href={`/${user.username}?tab=blocks`}>Blocks</Link>
+      <div className="py-2">
+        <div className="flex gap-2">
+          <Link href={`/${user.username}?tab=overview`}>Overview</Link>
+          <Link href={`/${user.username}?tab=blocks`}>Blocks</Link>
+        </div>
+        {(!tab || tab === "overview") && <Overview />}
+        {tab === "blocks" && <Blocks userId={user.id} />}
       </div>
-      {(!tab || tab === "overview") && <Overview />}
-      {tab === "blocks" && <Blocks userId={user.id} />}
     </div>
   );
 }

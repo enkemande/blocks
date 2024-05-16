@@ -22,7 +22,9 @@ export default async function BlockPage(props: BlockPageProps) {
 
   return (
     <main className="container">
-      {block.files.length === 0 ? <SetupInstructions /> : <Details />}
+      <div className="py-2">
+        {block.files.length === 0 ? <SetupInstructions /> : <Details />}
+      </div>
     </main>
   );
 }

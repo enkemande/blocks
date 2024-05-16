@@ -26,8 +26,8 @@ export default async function Home({ searchParams }: HomePageProps) {
   const blocks = await trpcCaller.block.getAll();
 
   return (
-    <main className="container ">
-      <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-2">
+    <main className="container">
+      <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-2 py-2">
         {blocks.map((block, key) => {
           return (
             <Card key={key}>
