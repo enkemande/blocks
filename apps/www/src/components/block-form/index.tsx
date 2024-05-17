@@ -32,21 +32,39 @@ import { CreateBlockSchema } from "@/schemas/block";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { LoadingSpinner } from "../loading-spinner";
+
+type CreateBlockFormType = z.infer<typeof CreateBlockSchema>;
 
 export type AddBlockFormProps = {
   title: string;
   description: string;
+  trigger: React.ReactNode;
+  defaultValues?: CreateBlockFormType;
+  id?: number;
 };
 
-type CreateBlockFormType = z.infer<typeof CreateBlockSchema>;
-
-export const AddBlockForm: React.FC<AddBlockFormProps> = ({}) => {
-  const session = useSession();
+export const BlockForm: React.FC<AddBlockFormProps> = ({
+  trigger,
+  defaultValues,
+  title,
+  description,
+  id,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const session = useSession();
+
+  const updateBlock = trpc.block.update.useMutation({
+    onSuccess: () => {
+      setIsOpen(false);
+      router.refresh();
+    },
+  });
+
   const createBlock = trpc.block.create.useMutation({
     onSuccess: (data) => {
       router.push(`/${session.data?.user?.username}/${data.name}`);
@@ -61,19 +79,25 @@ export const AddBlockForm: React.FC<AddBlockFormProps> = ({}) => {
       description: "",
       framework: "react",
       library: "shadcn",
-      visibility: "public",
+      ...defaultValues,
     },
   });
 
   const onSubmit: SubmitHandler<CreateBlockFormType> = (data) => {
-    createBlock.mutate(data);
+    if (id) {
+      updateBlock.mutate({ id, ...data });
+    } else {
+      createBlock.mutate(data);
+    }
   };
+
+  const isLoading = useMemo(() => {
+    return updateBlock.isPending || createBlock.isPending;
+  }, [updateBlock.isPending, createBlock.isPending]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>Add Block</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <Form {...form}>
           <form
@@ -81,11 +105,8 @@ export const AddBlockForm: React.FC<AddBlockFormProps> = ({}) => {
             className="flex flex-col gap-4"
           >
             <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </DialogDescription>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
             </DialogHeader>
             <FormField
               control={form.control}
@@ -94,7 +115,11 @@ export const AddBlockForm: React.FC<AddBlockFormProps> = ({}) => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input
+                      placeholder="Name"
+                      {...field}
+                      readOnly={id ? true : false}
+                    />
                   </FormControl>
                   <FormDescription>
                     Assign a unique name for your block.
@@ -166,8 +191,13 @@ export const AddBlockForm: React.FC<AddBlockFormProps> = ({}) => {
               )}
             />
             <DialogFooter>
-              <Button className="w-full" type="submit">
-                Create block
+              <Button
+                disabled={isLoading}
+                className="w-full flex gap-2"
+                type="submit"
+              >
+                {isLoading && <LoadingSpinner className="w-4 h-4" />}
+                {id ? "Update Block" : "Create Block"}
               </Button>
             </DialogFooter>
           </form>

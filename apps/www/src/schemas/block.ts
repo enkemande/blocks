@@ -23,6 +23,8 @@ export const UpdateBlockSchema = z
       .string()
       .min(1, "block description should be at least 1 character long"),
     visibility: z.string().default("public"),
+    framework: z.string().default("react"),
+    library: z.string().default("shadcn"),
   })
   .strict();
 

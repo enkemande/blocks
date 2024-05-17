@@ -1,10 +1,12 @@
-import { AddBlockForm } from "@/components/add-block-form";
+import { BlockForm } from "@/components/block-form";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authOptions } from "@/libs/auth";
 import NextAuthProvider from "@/providers/auth";
 import TrpcProvider from "@/providers/trpc";
 import UserProvider from "@/providers/user";
 import { cn } from "@/utils/cn";
+import { PlusIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
@@ -30,7 +32,7 @@ export default async function RootLayout({
         <UserProvider>
           <html lang="en" suppressHydrationWarning>
             <body className={cn(inter.className, "bg-gray-100")}>
-              <header className="border-b border-b-slate-300">
+              <header>
                 <div className="container">
                   <div className="flex flex-row items-center justify-between gap-2 py-2">
                     <Link href="/">
@@ -39,8 +41,19 @@ export default async function RootLayout({
                     <div className="flex-1 flex items-center justify-center">
                       <Input placeholder="Search Blocks" />
                     </div>
-                    <nav>
-                      <AddBlockForm title="" description="" />
+                    <nav className="flex flex-row items-center">
+                      {session && (
+                        <BlockForm
+                          title="Create a new block"
+                          description="Create a new block"
+                          trigger={
+                            <Button className="flex items-center gap-2">
+                              <PlusIcon className="w-4 h-4" />
+                              <span>Add Block</span>
+                            </Button>
+                          }
+                        />
+                      )}
                     </nav>
                   </div>
                 </div>

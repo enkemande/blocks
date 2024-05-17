@@ -1,7 +1,10 @@
+import { BlockForm } from "@/components/block-form";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { authOptions } from "@/libs/auth";
 import { trpcCaller } from "@/libs/trpc/server";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
+import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import Details from "./details";
 import SetupInstructions from "./setup-instructions";
@@ -11,6 +14,7 @@ type BlockPageProps = {
 };
 
 export default async function BlockPage(props: BlockPageProps) {
+  const session = await getServerSession(authOptions);
   const { blockName, userId } = props.params;
   const user = await trpcCaller.user.getByIdOrUsername(userId);
 
@@ -36,10 +40,39 @@ export default async function BlockPage(props: BlockPageProps) {
             <h1 className="font-bold text-lg">{block.name}</h1>
           </div>
           <div className="flex flex-row items-center gap-2">
-            <Button size="sm" variant="outline" className="flex gap-2 h-8">
-              <Pencil className="h-3 w-3" />
-              Edit
-            </Button>
+            {session && session.user.id === block.user.id && (
+              <div className="flex items-center gap-2">
+                <BlockForm
+                  title="Edit block"
+                  description="Update your block details"
+                  id={block.id}
+                  defaultValues={{
+                    name: block.name,
+                    description: block.description!,
+                    framework: block.framework!,
+                    library: block.library!,
+                  }}
+                  trigger={
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex gap-2 h-8"
+                    >
+                      <Pencil className="h-3 w-3" />
+                      <span>Edit</span>
+                    </Button>
+                  }
+                />
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="flex gap-2 h-8"
+                >
+                  <Trash className="h-3 w-3" />
+                  <span>Delete</span>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         {block.files.length === 0 ? <SetupInstructions /> : <Details />}
