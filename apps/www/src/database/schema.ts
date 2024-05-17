@@ -72,7 +72,7 @@ export const blocksTable = pgTable("blocks", {
   framework: text("framework"),
   library: text("library"),
   description: text("description"),
-  visibility: text("visibility").notNull(),
+  visibility: text("visibility"),
   ownerId: text("owner_id")
     .references(() => usersTable.id)
     .notNull(),

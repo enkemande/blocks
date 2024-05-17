@@ -15,7 +15,7 @@ export const blockRouter = createTRPCRouter({
       return ctx.db
         .insert(blocksTable)
         .values({ ...input, ownerId: ctx.session.user?.id! })
-        .returning({ id: blocksTable.id })
+        .returning()
         .then((result) => result[0]);
     }),
   update: protectedProcedure
@@ -48,7 +48,7 @@ export const blockRouter = createTRPCRouter({
     .input(GetBlockSchema)
     .query(async ({ ctx, input: { userId, name } }) => {
       return ctx.db.query.blocksTable.findFirst({
-        with: { files: { with: { modules: true } } },
+        with: { files: { with: { modules: true } }, user: true },
         where: and(eq(blocksTable.name, name), eq(blocksTable.ownerId, userId)),
       });
     }),

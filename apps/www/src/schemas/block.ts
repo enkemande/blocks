@@ -11,7 +11,7 @@ export const CreateBlockSchema = z
       .min(1, "block description should be at least 1 character long"),
     framework: z.string().default("react"),
     library: z.string().default("shadcn"),
-    visibility: z.string().default("public"),
+    visibility: z.string().default("public").optional(),
   })
   .strict();
 

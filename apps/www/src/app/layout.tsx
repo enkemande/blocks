@@ -1,10 +1,10 @@
+import { AddBlockForm } from "@/components/add-block-form";
 import { Input } from "@/components/ui/input";
 import { authOptions } from "@/libs/auth";
 import NextAuthProvider from "@/providers/auth";
 import TrpcProvider from "@/providers/trpc";
 import UserProvider from "@/providers/user";
 import { cn } from "@/utils/cn";
-import { Plus, User } from "lucide-react";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
@@ -40,24 +40,7 @@ export default async function RootLayout({
                       <Input placeholder="Search Blocks" />
                     </div>
                     <nav>
-                      <ul className="flex flex-row gap-2">
-                        <li>
-                          <Link
-                            className="border flex border-gray-300 h-9 w-9 items-center justify-center rounded"
-                            href="/new"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            className="border flex border-gray-300 h-9 w-9 items-center justify-center rounded"
-                            href={`/${session?.user.username || session?.user.id}`}
-                          >
-                            <User className="h-4 w-4" />
-                          </Link>
-                        </li>
-                      </ul>
+                      <AddBlockForm title="" description="" />
                     </nav>
                   </div>
                 </div>
